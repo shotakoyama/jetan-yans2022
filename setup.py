@@ -11,6 +11,5 @@ setuptools.setup(
         entry_points = {
             'console_scripts':[
                 'jetan = jetan.cli.jetan:main',
-                'preproc-naist = jetan.cli.preproc_naist:main',
                 ]},)
 

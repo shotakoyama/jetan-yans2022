@@ -75,12 +75,6 @@ class Pair:
         self.trgs = [trg + text for trg in self.trgs]
 
 
-def parse_args():
-    parser = ArgumentParser()
-    parser.add_argument('base')
-    return parser.parse_args()
-
-
 def get_xml_path_list(base_path):
     base = Path(base_path).resolve()
     xml_list = list(base.glob('*/*.xml'))
@@ -127,10 +121,8 @@ def show_pair(pair):
     print(line)
 
 
-def main():
-    args = parse_args()
-
-    xml_list = get_xml_path_list(args.base)
+def naist_main(base):
+    xml_list = get_xml_path_list(base)
 
     sent_list = [
         sent

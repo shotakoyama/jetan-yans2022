@@ -1,4 +1,6 @@
+from jetan.parser.main import parse_args
 
 def main():
-    print('a')
+    args = parse_args()
+    args.handler(args)
 
