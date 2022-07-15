@@ -6,11 +6,14 @@ class TokenDist:
             self,
             del_cost = 0.5,
             ins_cost = 0.5,
-            yomi_coef = 0.5,
+            text_coef = 0.25,
+            yomi_coef = 0.25,
             lemma_coef = 0.25,
-            pos_coef = 0.251):
+            pos_coef = 0.249):
+
         self.del_cost = del_cost
         self.ins_cost = ins_cost
+        self.text_coef = text_coef
         self.yomi_coef = yomi_coef
         self.lemma_coef = lemma_coef
         self.pos_coef = pos_coef
@@ -20,6 +23,13 @@ class TokenDist:
 
     def ins_dist(self, token):
         return self.ins_cost
+
+    def text_coef(self, token1, token2):
+        max_len = max(
+                len(token1.text),
+                len(token2.text))
+        dist = self.char_dist(token1.text, token2.text) / max_len
+        return dist
 
     def yomi_cost(self, token1, token2):
         max_len = max(
@@ -50,13 +60,9 @@ class TokenDist:
         return dist
 
     def sub_dist(self, token1, token2):
-
-        if token1.text == token2.text:
-            dist = 0.0
-        else:
-            y = self.yomi_dist(token1, token2)
-            l = self.lemma_dist(token1, token2)
-            p = self.pos_dist(token1, token2)
-            dist = y + l + p
+        y = self.yomi_dist(token1, token2)
+        l = self.lemma_dist(token1, token2)
+        p = self.pos_dist(token1, token2)
+        dist = y + l + p
         return dist
 

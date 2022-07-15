@@ -4,10 +4,10 @@ from functools import lru_cache
 def char_dist(text1, text2):
 
     if not text1:
-        return len(text1)
+        return len(text2)
 
     if not text2:
-        return len(text2)
+        return len(text1)
 
     if text1[0] == text2[0]:
         return char_dist(text1[1:], text2[1:])
