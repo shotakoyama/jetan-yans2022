@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from .prepare import prepare
 from .preproc import preproc
 from .align import align
+from .check import check
 from .estimate import estimate
 from .show import show
 from .progress import progress
@@ -14,6 +15,7 @@ def parse_args():
     prepare(first)
     preproc(first)
     align(first)
+    check(first)
     estimate(first)
     show(first)
 

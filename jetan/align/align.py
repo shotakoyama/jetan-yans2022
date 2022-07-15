@@ -2,44 +2,14 @@ from .dist_array import DistArray
 from .edit_util import (
         make_edit_list,
         merge_edits)
-
-def format_annotation(anno_id, start, end, form, unit, edit_trg, note):
-    line = '\t'.join([
-        'A',
-        str(anno_id),
-        str(start),
-        str(end),
-        form,
-        unit,
-        edit_trg,
-        note])
-    return line
-
+from jetan.jet.edit import JetEdit
+from jetan.jet.corr import JetCorr
 
 class Aligner:
 
     def __init__(self, dist, corr):
         self.dist = dist
         self.corr = corr
-
-    def generate_header(self, index):
-        return '# {}'.format(index)
-
-    def show_header(self, index):
-        print(self.generate_header(index))
-
-    def generate_source(self):
-        return 'S\t{}'.format(str(self.corr.src))
-
-    def show_source(self):
-        print(self.generate_source())
-
-    def generate_targets(self):
-        lst = ['C\t{}'.format(str(trg)) for trg in self.corr.trgs]
-        return '\n'.join(lst)
-
-    def show_targets(self):
-        print(self.generate_targets())
 
     def get_source_start_end(self, edit):
         ss = edit.src_start
@@ -57,33 +27,43 @@ class Aligner:
 
         return start, end
 
-    def get_edit_trg(self, trg, edit):
+    def get_edit_text(self, trg, edit):
         ts = edit.trg_start
         te = edit.trg_end
         return ''.join(token.text for token in trg[ts : te])
 
-    def show_annotation(self, anno_id, trg):
+    def make_jet_edit(self, anno_id, trg, edit):
+        start, end = self.get_source_start_end(edit)
+        form = 'X'
+        unit = 'Y'
+        text = self.get_edit_text(trg, edit)
+        jet_edit = JetEdit(
+                anno_id,
+                start,
+                end,
+                form,
+                unit,
+                text)
+        return jet_edit
+
+    def get_edits(self, anno_id, trg):
         arr = DistArray(self.dist, self.corr.src, trg)
         edit_list = make_edit_list(arr)
         edit_list = merge_edits(arr, edit_list)
+        edit_list = [
+                self.make_jet_edit(anno_id, trg, edit)
+                for edit
+                in edit_list]
+        return edit_list
 
-        for edit in edit_list:
-            start, end = self.get_source_start_end(edit)
-            form = 'X'
-            unit = 'Y'
-            edit_trg = self.get_edit_trg(trg, edit)
-            note = '_'
-            anno = format_annotation(
-                    anno_id,
-                    start,
-                    end,
-                    form,
-                    unit,
-                    edit_trg,
-                    note)
-            print(anno)
-
-    def show_annotations(self):
-        for anno_id, trg in enumerate(self.corr.trgs, start = 1):
-            self.show_annotation(anno_id, trg)
+    def make_jet_corr(self):
+        src = str(self.corr.src)
+        trgs = [str(trg) for trg in self.corr.trgs]
+        edits = [
+            edit
+            for anno_id, trg
+            in enumerate(self.corr.trgs, start = 1)
+            for edit
+            in self.get_edits(anno_id, trg)]
+        return JetCorr(src, trgs, edits)
 
