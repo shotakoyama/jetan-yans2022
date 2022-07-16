@@ -1,15 +1,12 @@
 from .corr import JetCorr
 
-class JetData:
-
-    def __init__(self, corrs):
-        self.corrs = corrs
+class JetData(list):
 
     def encode(self):
         text = '\n\n'.join([
             '# {}\n'.format(index) + corr.encode()
             for index, corr
-            in enumerate(self.corrs, start = 1)])
+            in enumerate(self, start = 1)])
         return text
 
     @classmethod
