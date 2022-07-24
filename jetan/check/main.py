@@ -1,4 +1,5 @@
 import sys
+from tqdm import tqdm
 from jetan.jet.data import JetData
 
 def check_order(index, corr):
@@ -54,16 +55,21 @@ def check_consistency(index, corr):
             raise Exception(line + corr.encode())
 
 
-def check_try():
+def check_try(bar):
     data = JetData.decode(sys.stdin.read())
-    for index, corr in enumerate(data, start = 1):
+
+    iterator = enumerate(data, start = 1)
+    if bar:
+        iterator = tqdm(iterator, bar_format = '{l_bar}{r_bar}')
+
+    for index, corr in iterator:
         check_order(index, corr)
         check_consistency(index, corr)
 
 
-def check_main():
+def check_main(bar):
     try:
-        check_try()
+        check_try(bar)
     except Exception as e:
         print(e)
     else:
