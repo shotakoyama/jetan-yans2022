@@ -1,3 +1,11 @@
+def edits_to_spans(edits):
+    spans = {
+        edit.get_span()
+        for edit
+        in edits}
+    return spans
+
+
 class Scorer:
 
     def __init__(self):
@@ -6,81 +14,66 @@ class Scorer:
         self.n_hyp = 0
 
     def update(self, ref_edits, hyp_edits):
-        ref_spans = {
-                edit.get_span()
-                for edit
-                in ref_edits}
-        hyp_spans = {
-                edit.get_span()
-                for edit
-                in hyp_edits}
+        ref_spans = edits_to_spans(ref_edits)
+        hyp_spans = edits_to_spans(hyp_edits)
         self.match += len(ref_spans & hyp_spans)
         self.n_ref += len(ref_spans)
         self.n_hyp += len(hyp_spans)
 
     def show(self):
-        print('match: {}'.format(self.match))
-        print('n_ref: {}'.format(self.n_ref))
-        print('n_hyp: {}'.format(self.n_hyp))
+        line = 'match: {},\tn_ref: {},\tn_hyp: {}'.format(self.match, self.n_ref, self.n_hyp)
+        print(line)
 
-        p = self.match / self.n_hyp
-        r = self.match / self.n_ref
+        if self.n_hyp == 0:
+            p = 1.0
+        else:
+            p = self.match / self.n_hyp
+
+        if self.n_ref == 0:
+            r = 0
+        else:
+            r = self.match / self.n_ref
+
         f = 2 * p * r / (p + r)
-        print('p: {:.2f}'.format(p * 100))
-        print('r: {:.2f}'.format(r * 100))
-        print('f: {:.2f}'.format(f * 100))
+        line = 'P: {:.2f},\tR: {:.2f},\tF: {:.2f}'.format(p * 100, r * 100, f * 100)
+        print(line)
 
 
-class FormScorer:
+class TagScorer:
 
     def __init__(self):
-        self.forms = list('MUFC')
-        self.match = {form: 0 for form in self.forms}
-        self.n_ref = {form: 0 for form in self.forms}
+        self.match = {tag: 0 for tag in self.tags}
+        self.n_ref = {tag: 0 for tag in self.tags}
 
     def update(self, ref_edits, hyp_edits):
-        hyp_spans = {
-                edit.get_span()
-                for edit
-                in hyp_edits}
+        hyp_spans = edits_to_spans(hyp_edits)
 
-        for form in self.forms:
+        for tag in self.tags:
             ref_spans = {
                     edit.get_span()
                     for edit
                     in ref_edits
-                    if edit.form == form}
-            self.match[form] += len(hyp_spans & ref_spans)
-            self.n_ref[form] += len(ref_spans)
+                    if self.cond(edit, tag)}
+            self.match[tag] += len(hyp_spans & ref_spans)
+            self.n_ref[tag] += len(ref_spans)
 
     def show(self):
-        print(self.match)
-        print(self.n_ref)
+        lst = ['{}: {}/{}'.format(tag, self.match[tag], self.n_ref[tag]) for tag in self.tags]
+        print(',\t'.join(lst))
 
 
-class UnitScorer:
+class FormScorer(TagScorer):
 
-    def __init__(self):
-        self.units = list('OLGI')
-        self.match = {unit: 0 for unit in self.units}
-        self.n_ref = {unit: 0 for unit in self.units}
+    tags = list('MUFC')
 
-    def update(self, ref_edits, hyp_edits):
-        hyp_spans = {
-                edit.get_span()
-                for edit
-                in hyp_edits}
+    def cond(self, edit, form):
+        return edit.form == form
 
-        for unit in self.units:
-            ref_spans = {
-                    edit.get_span()
-                    for edit
-                    in ref_edits
-                    if edit.unit == unit}
-            self.match[unit] += len(hyp_spans & ref_spans)
-            self.n_ref[unit] += len(ref_spans)
 
-    def show(self):
-        print(self.match)
-        print(self.n_ref)
+class UnitScorer(TagScorer):
+
+    tags = list('OLGI')
+
+    def cond(self, edit, unit):
+        return edit.unit == unit
 

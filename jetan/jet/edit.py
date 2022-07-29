@@ -20,9 +20,9 @@ class JetEdit:
         self.text = text
         self.note = note
 
-    def encode(self):
+    def encode(self, head = 'A'):
         line = '\t'.join([
-            'A',
+            head,
             str(self.index),
             str(self.start),
             str(self.end),
@@ -50,4 +50,19 @@ class JetEdit:
                 unit,
                 text,
                 note)
+
+    def span_eq(self, other):
+        return (
+            (self.start == other.start)
+            and
+            (self.end == other.end)
+            and
+            (self.text == other.text))
+
+    def span_lt(self, other):
+        if self.start < other.start:
+            return True
+        if self.end < other.end:
+            return True
+        return self.text < other.text
 

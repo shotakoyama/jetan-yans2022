@@ -16,21 +16,6 @@ def get_edits(corr, trg_index):
     return lst
 
 
-def show_verbose(ref_edits, hyp_edits):
-    ref_spans = {
-            edit.get_span()
-            for edit
-            in ref_edits}
-    hyp_spans = {
-            edit.get_span()
-            for edit
-            in hyp_edits}
-
-    for edit in hyp_edits:
-        if edit.get_span() not in ref_spans:
-            print(edit.edit.encode())
-
-
 def compare_main(
         reference,
         hypothesis,
@@ -54,13 +39,11 @@ def compare_main(
             form_scorer.update(ref_edits, hyp_edits)
             unit_scorer.update(ref_edits, hyp_edits)
 
-            if verbose:
-                print('# {}-{}'.format(corr_index, trg_index))
-                show_verbose(
-                        ref_edits,
-                        hyp_edits)
+        if verbose:
+            print('# {}'.format(corr_index))
+            scorer.show()
 
-
+    print('# summary')
     scorer.show()
     form_scorer.show()
     unit_scorer.show()
