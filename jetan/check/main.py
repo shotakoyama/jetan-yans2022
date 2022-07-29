@@ -25,6 +25,16 @@ def check_order(index, corr):
             line = line + '!!! End Position Error\n'
             raise Exception(line + corr.encode())
 
+        if edit.form not in {'M', 'U', 'F', 'C', 'X'}:
+            line = '# {}\n'.format(index)
+            line = line + '!!! Illegal Form\n'
+            raise Exception(line + corr.encode())
+
+        if edit.unit not in {'O', 'L', 'G', 'I', 'Y'}:
+            line = '# {}\n'.format(index)
+            line = line + '!!! Illegal Unit\n'
+            raise Exception(line + corr.encode())
+
         pos = edit.end
 
 

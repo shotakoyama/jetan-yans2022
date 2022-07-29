@@ -35,6 +35,9 @@ def mergeable(arr, edit1, edit2):
     if trg_bunsetu_cond(arr, edit2):
         return False
 
+    if arr.trg[edit2.trg_start].dep == 'fixed':
+        return True
+
     if trg_function_word_cond(arr, edit1) ^ trg_function_word_cond(arr, edit2):
         return False
 

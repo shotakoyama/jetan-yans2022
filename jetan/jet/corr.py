@@ -29,6 +29,7 @@ class JetCorr:
     @classmethod
     def decode(cls, text):
 
+        src = None
         trgs = []
         edits = []
 
@@ -55,5 +56,6 @@ class JetCorr:
             else:
                 pass
 
+        assert src is not None, 'no source in decoding of correction'
         return cls(src, trgs, edits)
 
