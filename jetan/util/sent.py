@@ -29,3 +29,29 @@ class Sent(list):
                 self[token.head].dependents.append(token.index)
         return self
 
+    def get_bunsetu_list(self):
+        lst = []
+
+        for index, token in enumerate(self):
+            if token.bunsetu == 'B':
+                tmp = [index]
+                lst.append(tmp)
+            elif token.bunsetu == 'I':
+                lst[-1].append(index)
+            else:
+                assert False
+
+        return lst
+
+    def get_bunsetu_spans(self):
+        bunsetu_list = self.get_bunsetu_list()
+        bunsetu_spans = []
+
+        for bunsetu in bunsetu_list:
+            assert len(bunsetu) > 0
+            start = bunsetu[0]
+            end = bunsetu[-1]
+            bunsetu_spans.append((start, end + 1))
+
+        return bunsetu_spans
+

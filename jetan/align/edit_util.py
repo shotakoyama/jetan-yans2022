@@ -6,7 +6,7 @@ def make_edit_list(arr):
 
     while not searcher.is_origin():
         edit = searcher.move()
-        if edit is not None:
+        if not edit.noop:
             edit_list = [edit] + edit_list
 
     return edit_list
@@ -35,7 +35,7 @@ def mergeable(arr, edit1, edit2):
     if trg_bunsetu_cond(arr, edit2):
         return False
 
-    if arr.trg[edit2.trg_start].dep == 'fixed':
+    if len(arr.trg) < edit2.trg_start and arr.trg[edit2.trg_start].dep == 'fixed':
         return True
 
     if trg_function_word_cond(arr, edit1) ^ trg_function_word_cond(arr, edit2):

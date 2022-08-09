@@ -5,7 +5,6 @@ from .align import Aligner
 from jetan.util.corr import Corr
 from jetan.jet.data import JetData
 
-
 def make_corr(dist, line):
     corr = Corr.decode(json.loads(line))
     aligner = Aligner(dist, corr)
@@ -13,7 +12,7 @@ def make_corr(dist, line):
     return corr
 
 
-def align_main():
+def merge_main():
     dist = TokenDist()
 
     corrs = [

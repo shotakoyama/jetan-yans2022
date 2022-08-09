@@ -1,4 +1,10 @@
-from .edit import Edit
+from .searcher_util import (
+        move_upside,
+        move_leftside,
+        move_match,
+        move_diag,
+        move_up,
+        move_left)
 
 class Searcher:
 
@@ -12,57 +18,36 @@ class Searcher:
     def is_origin(self):
         return (self.x, self.y) == (0, 0)
 
-    def move_upside(self):
-        edit = Edit(0, 0, self.y - 1, self.y)
-        self.y = self.y - 1
-        return edit
-
-    def move_leftside(self):
-        edit = Edit(self.x - 1, self.x, 0, 0)
-        self.x = self.x - 1
-        return edit
-
-    def move_match(self):
-        self.x = self.x - 1
-        self.y = self.y - 1
-        return None
-
-    def move_diag(self):
-        edit = Edit(self.x - 1, self.x, self.y - 1, self.y)
-        self.x = self.x - 1
-        self.y = self.y - 1
-        return edit
-
-    def move_up(self):
-        edit = Edit(self.x - 1, self.x, self.y, self.y)
-        self.x = self.x - 1
-        return edit
-
-    def move_left(self):
-        edit = Edit(self.x, self.x, self.y - 1, self.y)
-        self.y = self.y - 1
-        return edit
-
     def move_inside(self):
         op = self.array.o_array[self.x, self.y]
+
         if op == 'N':
-            edit = self.move_match()
+            edit = move_match(self)
         elif op == 'R':
-            edit = self.move_diag()
+            edit = move_diag(self)
         elif op == 'U':
-            edit = self.move_up()
+            edit = move_up(self)
         elif op == 'M':
-            edit = self.move_left()
+            edit = move_left(self)
         else:
             assert False
         return edit
 
     def move(self):
         if self.x == 0:
-            edit = self.move_upside()
+            edit = move_upside(self)
         elif self.y == 0:
-            edit = self.move_leftside()
+            edit = move_leftside(self)
         else:
             edit = self.move_inside()
         return edit
+
+    def search(self):
+        edit_list = []
+
+        while not self.is_origin():
+            edit = self.move()
+            edit_list = [edit] + edit_list
+
+        return edit_list
 
