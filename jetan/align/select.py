@@ -2,61 +2,97 @@ import sys
 import json
 from .token_dist import TokenDist
 from .dist_array import DistArray
-from .edit_util import make_edit_list
-from .align import Aligner
 from jetan.util.corr import Corr
+from jetan.jet.edit import JetEdit
+from jetan.jet.corr import JetCorr
 from jetan.jet.data import JetData
 from .searcher import Searcher
+from .start_list import StartList
+from .end_list import EndList
+from functools import reduce
 
-def get_pos_lists(bunsetu_spans):
-    pos_list = [
-            index
-            for index, (start, end)
-            in enumerate(bunsetu_spans)
-            for _
-            in range(start, end)]
-    start_pos = pos_list + [pos_list[-1]]
-    end_pos = [pos_list[0]] + pos_list
-    return start_pos, end_pos
+def split_edit_list(edit_list, start_list, end_list):
+    assert len(edit_list) == len(start_list) == len(end_list)
 
+    span_list = list(zip(start_list, end_list))
+    block_list = []
 
-def get_spans(src, trg, edit_list, bunsetu_spans):
-    print(src)
-    print(trg)
-    print(edit_list)
-    print(bunsetu_spans)
+    tmp = None
+    for span, edit in zip(span_list, edit_list):
+        if tmp is None or tmp != span:
+            block_list.append([edit])
+        else:
+            block_list[-1].append(edit)
+        tmp = span
 
-    bunsetu_edit_list = [
-            list()
-            for span
-            in bunsetu_spans]
-    start_pos, end_pos = get_pos_lists(bunsetu_spans)
-
-    for edit in edit_list:
-        start_bunsetu = start_pos[edit.trg_start]
-        end_bunsetu = end_pos[edit.trg_end]
-        assert start_bunsetu == end_bunsetu, (str(trg), start_bunsetu, end_bunsetu, edit.trg_start, edit.src_start, trg[edit.trg_start].text)
+    return block_list
 
 
+def get_source_start_end(corr, edit):
+    ss = edit.src_start
+    se = edit.src_end
 
-    #for edit in edit_list:
-    #    print(edit)
-    #print(bunsetu_edit_list)
+    if ss < len(corr.src):
+        start = corr.src[ss].front
+    else:
+        start = len(str(corr.src))
+
+    if se < len(corr.src):
+        end = corr.src[se].front
+    else:
+        end = len(str(corr.src))
+
+    return start, end
+
+
+def make_corr(dist, line):
+    corr = Corr.decode(json.loads(line))
+    src_spans = corr.src.get_bunsetu_spans()
+
+    edits = []
+
+    for anno_index, trg in enumerate(corr.trgs, start = 1):
+        arr = DistArray(dist, corr.src, trg)
+        searcher = Searcher(arr)
+        edit_list = searcher.search()
+
+        start_list = StartList(corr, trg, edit_list)
+        start_list.make()
+
+        end_list = EndList(corr, trg, edit_list, start_list)
+        end_list.make()
+
+        block_list = split_edit_list(edit_list, start_list, end_list)
+
+        for block in block_list:
+            if any(edit.form != 'N' for edit in block):
+                edit = reduce(lambda x, y: x + y, block)
+                src_start, src_end = get_source_start_end(corr, edit)
+                jet_edit = JetEdit(
+                        anno_index,
+                        src_start,
+                        src_end,
+                        'X',
+                        'Y',
+                        ''.join([
+                            x.text
+                            for x
+                            in trg[edit.trg_start : edit.trg_end]]))
+                edits.append(jet_edit)
+
+    src = str(corr.src)
+    trgs = [str(trg) for trg in corr.trgs]
+    return JetCorr(src, trgs, edits)
 
 
 def select_main():
     dist = TokenDist()
 
-    for index, line in enumerate(sys.stdin, start = 1):
-        corr = Corr.decode(json.loads(line))
-        for anno_id, trg in enumerate(corr.trgs, start = 1):
-            arr = DistArray(dist, corr.src, trg)
-            searcher = Searcher(arr)
-            edit_list = searcher.search()
+    corrs = [
+        make_corr(dist, line)
+        for index, line
+        in enumerate(sys.stdin, start = 1)]
 
-            src_spans = corr.src.get_bunsetu_spans()
-            trg_spans = trg.get_bunsetu_spans()
-            print('---')
-            print(src_spans)
-            print(trg_spans)
+    jet_data = JetData(corrs)
+    print(jet_data.encode())
 
