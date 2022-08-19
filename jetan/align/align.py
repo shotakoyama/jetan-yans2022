@@ -4,6 +4,7 @@ from .edit_util import (
         merge_edits)
 from jetan.jet.edit import JetEdit
 from jetan.jet.corr import JetCorr
+from .form import get_form
 
 class Aligner:
 
@@ -34,7 +35,7 @@ class Aligner:
 
     def make_jet_edit(self, anno_id, trg, edit):
         start, end = self.get_source_start_end(edit)
-        form = 'X'
+        form = get_form(self.corr.src, trg, edit)
         unit = 'Y'
         text = self.get_edit_text(trg, edit)
         jet_edit = JetEdit(

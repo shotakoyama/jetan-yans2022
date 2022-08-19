@@ -9,11 +9,14 @@ class CompEdit:
         self.form = edit.form
         self.unit = edit.unit
 
-    def get_span(self):
-        span = (
+    def __repr__(self):
+        tup = (
             self.src_start,
             self.src_end,
             self.trg_start,
-            self.trg_end)
-        return span
+            self.trg_end,
+            self.form,
+            self.unit,
+            self.edit.text)
+        return str(tup)
 
