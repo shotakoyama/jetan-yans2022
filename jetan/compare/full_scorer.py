@@ -1,8 +1,6 @@
-from .scorer import BaseScorer
-from .update import (
-        update_score,
-        update_count)
-from .scorer_util import show_scorer
+from .scorer import SingleScorer
+from .scorer_attr import ScorerAttr
+from .update import update_count
 
 def edits_to_full(edits):
     spans = {(
@@ -17,9 +15,9 @@ def edits_to_full(edits):
     return spans
 
 
-class FullScorer(BaseScorer):
+class FullScorer(SingleScorer):
 
-    title = 'full'
+    attr = ScorerAttr('full')
 
     def update_pair(
             self,
@@ -32,11 +30,4 @@ class FullScorer(BaseScorer):
                 hyp_edits,
                 edits_to_full)
         return self
-
-    def update(self, data):
-        update_score(self, data)
-        return self
-
-    def show(self):
-        show_scorer(self)
 

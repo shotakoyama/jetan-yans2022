@@ -27,37 +27,49 @@ def format_prf(tp, fp, fn):
     return p, r, f
 
 
-def show_scorer(scorer):
-    p, r, f = format_prf(
-            scorer.tp,
-            scorer.fp,
-            scorer.fn)
-
-    table = PrettyTable([scorer.title, 'Prec', 'Rec', 'F_0.5'])
-    table.add_row(['score', p, r, f])
-    print(table)
-
-
 def get_score_row(label, tp, fp, fn):
     p, r, f = format_prf(tp, fp, fn)
     return [label, tp, fp, fn, p, r, f]
 
 
+def show_scorer(scorer):
+    header = ['TP', 'FP', 'FN', 'Prec', 'Rec', 'F_0.5']
+    table = PrettyTable([scorer.attr.title] + header)
+    lst = get_score_row('score', scorer.tp, scorer.fp, scorer.fn)
+    table.add_row(lst)
+    print(table)
+
+
 def show_type_scorer(scorer):
     header = ['TP', 'FP', 'FN', 'Prec', 'Rec', 'F_0.5']
-    table = PrettyTable([scorer.title] + header)
+    table = PrettyTable([scorer.attr.title] + header)
 
-    table.align[scorer.title] = 'l'
+    table.align[scorer.attr.title] = 'l'
     for x in header:
         table.align[x] = 'r'
 
-    for i, label in enumerate(scorer.labels):
-        lst = get_score_row(label, *scorer.cm[i].tolist())
+    for i, label in enumerate(scorer.attr.labels):
+        lst = get_score_row(label, *scorer.array[i].tolist())
         table.add_row(lst)
 
     all_lst = get_score_row(
             'all',
-            *scorer.cm.sum(axis = 0).tolist())
+            *scorer.array.sum(axis = 0).tolist())
+    table.add_row(all_lst)
+
+    print(table)
+
+
+def show_cm_scorer(scorer):
+    table = PrettyTable(
+            [scorer.attr.title] + scorer.attr.labels + ['all'])
+
+    for label, row in zip(scorer.attr.labels, scorer.cm):
+        lst = [label] + row.tolist() + [sum(row.tolist())]
+        table.add_row(lst)
+
+    all_lst = scorer.cm.sum(axis = 0).tolist()
+    table.add_row(['all'] + all_lst + [sum(all_lst)])
 
     print(table)
 

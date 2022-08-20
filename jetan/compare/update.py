@@ -5,11 +5,6 @@ def update_corr(scorer, corr):
         scorer.update_pair(ref_edits, hyp_edits)
 
 
-def update_score(scorer, data):
-    for corr in data:
-        update_corr(scorer, corr)
-
-
 def update_count(
         scorer,
         ref_edits,
@@ -47,4 +42,32 @@ def update_type_count(
 
     for x in fn:
         scorer.update_one(x, 2)
+
+
+def update_cm_count(
+        scorer,
+        ref_edits,
+        hyp_edits,
+        converter = None):
+
+    if converter is not None:
+        ref_edits = converter(ref_edits)
+        hyp_edits = converter(hyp_edits)
+
+    ref_dict = {
+            edit[1:]: edit[0]
+            for edit
+            in ref_edits}
+    hyp_dict = {
+            edit[1:]: edit[0]
+            for edit
+            in hyp_edits}
+    ref_spans = set(ref_dict.keys())
+    hyp_spans = set(hyp_dict.keys())
+    match_spans = ref_spans & hyp_spans
+
+    for span in match_spans:
+        ref_label = ref_dict[span]
+        hyp_label = hyp_dict[span]
+        scorer.update_one(ref_label, hyp_label)
 

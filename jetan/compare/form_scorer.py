@@ -1,8 +1,10 @@
-from .scorer import TypeScorer
+from .scorer import (
+        TypeScorer,
+        CMScorer)
+from .scorer_attr import TypeScorerAttr
 from .update import (
-        update_score,
-        update_type_count)
-from .scorer_util import show_type_scorer
+        update_type_count,
+        update_cm_count)
 
 def edits_to_tuple(edits):
     tuples = {(
@@ -16,17 +18,12 @@ def edits_to_tuple(edits):
     return tuples
 
 
+attr = TypeScorerAttr('form', ['M', 'U', 'F', 'C', 'X'])
+
+
 class FormScorer(TypeScorer):
 
-    title = 'form'
-    labels = ['M', 'U', 'F', 'C', 'X']
-    label_dict = {
-            label: index
-            for index, label
-            in enumerate(labels)}
-
-    def get_label(self, x):
-        return self.label_dict[x[0]]
+    attr = attr
 
     def update_pair(self, ref_edits, hyp_edits):
         update_type_count(
@@ -35,10 +32,15 @@ class FormScorer(TypeScorer):
                 hyp_edits,
                 edits_to_tuple)
 
-    def update(self, data):
-        update_score(self, data)
-        return self
 
-    def show(self):
-        show_type_scorer(self)
+class FormCMScorer(CMScorer):
+
+    attr = attr
+
+    def update_pair(self, ref_edits, hyp_edits):
+        update_cm_count(
+                self,
+                ref_edits,
+                hyp_edits,
+                edits_to_tuple)
 

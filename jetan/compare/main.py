@@ -2,8 +2,12 @@ from .util import read_data
 from .data import make_comp_data
 from .span_scorer import SpanScorer
 from .full_scorer import FullScorer
-from .form_scorer import FormScorer
-from .unit_scorer import UnitScorer
+from .form_scorer import (
+        FormScorer,
+        FormCMScorer)
+from .unit_scorer import (
+        UnitScorer,
+        UnitCMScorer)
 
 def compare_main(
         reference,
@@ -24,4 +28,10 @@ def compare_main(
 
     unit_scorer = UnitScorer().update(data_edits)
     unit_scorer.show()
+
+    form_cm_scorer = FormCMScorer().update(data_edits)
+    form_cm_scorer.show()
+
+    unit_cm_scorer = UnitCMScorer().update(data_edits)
+    unit_cm_scorer.show()
 

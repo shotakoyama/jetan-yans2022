@@ -1,9 +1,6 @@
-from prettytable import PrettyTable
-from .scorer import BaseScorer
-from .update import (
-        update_score,
-        update_count)
-from .scorer_util import show_scorer
+from .scorer import SingleScorer
+from .scorer_attr import ScorerAttr
+from .update import update_count
 
 def edits_to_spans(edits):
     spans = {(
@@ -16,9 +13,9 @@ def edits_to_spans(edits):
     return spans
 
 
-class SpanScorer(BaseScorer):
+class SpanScorer(SingleScorer):
 
-    title = 'span'
+    attr = ScorerAttr('span')
 
     def update_pair(
             self,
@@ -31,11 +28,4 @@ class SpanScorer(BaseScorer):
                 hyp_edits,
                 edits_to_spans)
         return self
-
-    def update(self, data):
-        update_score(self, data)
-        return self
-
-    def show(self):
-        show_scorer(self)
 
