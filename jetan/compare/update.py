@@ -30,9 +30,9 @@ def update_type_count(
         ref_edits = converter(ref_edits)
         hyp_edits = converter(hyp_edits)
 
-    tp = ref_edits & hyp_edits
-    fp = hyp_edits - ref_edits
-    fn = ref_edits - hyp_edits
+    tp = ref_edits & hyp_edits # true positive
+    fp = hyp_edits - ref_edits # false positive
+    fn = ref_edits - hyp_edits # false negative
 
     for x in tp:
         scorer.update_one(x, 0)

@@ -1,16 +1,20 @@
 from prettytable import PrettyTable
 
 def calc_prf(tp, fp, fn):
+
+    # precision
     if (tp + fp) == 0:
         p = 1.0
     else:
         p = tp / (tp + fp)
 
+    # recall
     if (tp + fn) == 0:
         r = 0.0
     else:
         r = tp / (tp + fn)
 
+    # F 0.5
     if (p + r) == 0:
         f = 0.0
     else:
@@ -61,8 +65,12 @@ def show_type_scorer(scorer):
 
 
 def show_cm_scorer(scorer):
-    table = PrettyTable(
-            [scorer.attr.title] + scorer.attr.labels + ['all'])
+    header = scorer.attr.labels + ['all']
+    table = PrettyTable([scorer.attr.title] + header)
+
+    table.align[scorer.attr.title] = 'l'
+    for x in header:
+        table.align[x] = 'r'
 
     for label, row in zip(scorer.attr.labels, scorer.cm):
         lst = [label] + row.tolist() + [sum(row.tolist())]

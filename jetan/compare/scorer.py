@@ -23,9 +23,9 @@ class BaseScorer:
 class SingleScorer(BaseScorer):
 
     def __init__(self):
-        self.tp = 0
-        self.fp = 0
-        self.fn = 0
+        self.tp = 0 # true positive
+        self.fp = 0 # false positive
+        self.fn = 0 # false negative
 
     def show(self):
         show_scorer(self)
@@ -34,6 +34,8 @@ class SingleScorer(BaseScorer):
 class TypeScorer(BaseScorer):
 
     def __init__(self):
+        # 1. (labels)
+        # 2. (true positive, false positive, false negative)
         self.array = np.zeros(
                 (len(self.attr.labels), 3),
                 dtype = np.int)
@@ -51,6 +53,9 @@ class CMScorer(BaseScorer):
     attr = None
 
     def __init__(self):
+        # confusion matrix
+        # 1. reference
+        # 2. hypothesis
         self.cm = np.zeros(
                 (len(self.attr.labels),) * 2,
                 dtype = np.int)
