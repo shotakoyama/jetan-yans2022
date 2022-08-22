@@ -20,6 +20,14 @@ def trg_bunsetu_cond(arr, edit):
     return arr.trg[edit.trg_start].bunsetu == 'B'
 
 
+def trg_punct_word_cond(arr, edit):
+    if edit.trg_start == len(arr.trg):
+        return False
+    if edit.trg_start == edit.trg_end:
+        return False
+    return arr.trg[edit.trg_start].tag1 == '補助記号'
+
+
 def trg_function_word_cond(arr, edit):
     if edit.trg_start == len(arr.trg):
         return False
@@ -32,16 +40,19 @@ def mergeable(arr, edit1, edit2):
     if not edit1.comes_just_before(edit2):
         return False
 
-    if trg_bunsetu_cond(arr, edit2):
-        return False
+    #if trg_bunsetu_cond(arr, edit2):
+    #    return False
 
-    if len(arr.trg) < edit2.trg_start and arr.trg[edit2.trg_start].dep == 'fixed':
+    if edit2.trg_start < len(arr.trg) and arr.trg[edit2.trg_start].dep == 'fixed':
         return True
 
-    if trg_function_word_cond(arr, edit1) ^ trg_function_word_cond(arr, edit2):
-        return False
+    #if trg_punct_word_cond(arr, edit1) or trg_punct_word_cond(arr, edit2):
+    #    return False
 
-    return True
+    #if trg_function_word_cond(arr, edit1) ^ trg_function_word_cond(arr, edit2):
+    #    return False
+
+    return False
 
 
 def make_chunk_list(arr, edit_list):

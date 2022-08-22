@@ -20,17 +20,17 @@ def compare_main(
     span_scorer = SpanScorer().update(data_edits)
     span_scorer.show()
 
-    full_scorer = FullScorer().update(data_edits)
-    full_scorer.show()
+    #full_scorer = FullScorer().update(data_edits)
+    #full_scorer.show()
 
-    form_scorer = FormScorer().update(data_edits)
-    form_scorer.show()
+    #form_scorer = FormScorer().update(data_edits)
+    #form_scorer.show()
 
     unit_scorer = UnitScorer().update(data_edits)
     unit_scorer.show()
 
-    form_cm_scorer = FormCMScorer().update(data_edits)
-    form_cm_scorer.show()
+    #form_cm_scorer = FormCMScorer().update(data_edits)
+    #form_cm_scorer.show()
 
     unit_cm_scorer = UnitCMScorer().update(data_edits)
     unit_cm_scorer.show()

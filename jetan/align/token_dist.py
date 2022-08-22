@@ -6,10 +6,10 @@ class TokenDist:
             self,
             del_cost = 0.5,
             ins_cost = 0.5,
-            text_coef = 0.25,
-            yomi_coef = 0.25,
-            lemma_coef = 0.25,
-            pos_coef = 0.249):
+            text_coef = 0,
+            yomi_coef = 0.333,
+            lemma_coef = 0.333,
+            pos_coef = 0.333):
 
         self.del_cost = del_cost
         self.ins_cost = ins_cost

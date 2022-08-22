@@ -11,7 +11,7 @@ def ortho_cond_2(src_tokens, trg_tokens):
     dist = char_dist(src_yomi, trg_yomi)
     norm = dist / max(len(src_yomi), len(trg_yomi))
 
-    return norm < 0.3
+    return norm <= 0.3
 
 
 def grammar_cond_1(src_tokens, trg_tokens):
@@ -27,7 +27,7 @@ def grammar_cond_1(src_tokens, trg_tokens):
     if src.tag1 != trg.tag1:
         return False
 
-    if src.tag1 not in {'動詞', '助動詞'}:
+    if src.tag1 not in {'動詞', '形容詞', '助動詞'}:
         return False
 
     if src.lemma == trg.lemma:
@@ -43,9 +43,8 @@ def grammar_cond_1(src_tokens, trg_tokens):
 
 
 def grammar_cond_2(trg_tokens):
-    return all(
-            x.tag1 in {'助詞', '助動詞'}
-            or x.dep == 'fixed'
+    return any(
+            x.dep == 'fixed'
             for x
             in  trg_tokens)
 

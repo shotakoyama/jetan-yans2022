@@ -22,7 +22,7 @@ def misform_cond_2(src_tokens, trg_tokens):
     dist = char_dist(src_yomi, trg_yomi)
     norm = dist / max(len(src_yomi), len(trg_yomi))
 
-    return norm < 0.3
+    return norm <= 0.3
 
 
 def get_form(src, trg, edit):
