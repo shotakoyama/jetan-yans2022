@@ -1,6 +1,7 @@
 from jetan.tool.stat.char import char_main
 from jetan.tool.stat.sent import sent_main
 from jetan.tool.stat.dist import dist_main
+from jetan.tool.stat.diff import diff_main
 
 def char(second):
 
@@ -36,6 +37,15 @@ def dist(second):
     parser.set_defaults(handler = command)
 
 
+def diff(second):
+
+    def command(args):
+        diff_main()
+
+    parser = second.add_parser('diff')
+    parser.set_defaults(handler = command)
+
+
 def stat(first):
     parser = first.add_parser('stat')
     second = parser.add_subparsers()
@@ -43,4 +53,5 @@ def stat(first):
     char(second)
     sent(second)
     dist(second)
+    diff(second)
 
