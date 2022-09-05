@@ -1,0 +1,813 @@
+\documentclass[12pt]{beamer}
+
+% beamer posterの利用に関する設定
+% A0 に合わせて 4 : 3 に (112cm x 84cm)
+\usepackage[orientation=landscape,size=custom,width=112,height=84,scale=2.1]{beamerposter}
+
+% メインフォントに関する設定
+\usepackage{fontspec}
+\setmainfont[Ligatures=TeX,BoldFont=Noto Sans Bold]{Noto Sans}
+
+% CJKに対応させる
+% 太字フォントを指定しないと疑似ボールドになる
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont=Noto Sans CJK JP Bold]{Noto Sans CJK JP}
+
+% 追加のフォント
+\newfontfamily{\dejavu}{DejaVu Sans}
+\newfontfamily{\notosansmono}{Noto Sans Mono}
+
+% tikz
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{bchart}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+% beamerのテーマ・スタイルに関する設定
+\setbeamertemplate{navigation symbols}{} % 右下のナビゲーションアイコンに消えてもらう
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=red}
+
+% blockのスタイル
+\usepackage[most]{tcolorbox} % mostがないとenhanced(tikzを用いる装飾表現)が使えない
+\setbeamertemplate{block begin}{
+	\begin{tcolorbox}[
+				enhanced,
+				fonttitle=\bfseries,
+				colframe=gray,
+				colback=gray!5!,
+				colbacktitle=gray!80,
+				attach boxed title to top left={yshift=-2mm, xshift=2mm},
+				title=\insertblocktitle
+			]
+		\vskip2mm
+}
+\setbeamertemplate{block end}{
+	\end{tcolorbox}
+}
+
+% itemize
+\setlength\leftmargini{1.5em}
+\setlength\leftmarginii{0.75em}
+\setlength\leftmarginiii{0.75em}
+\setbeamertemplate{itemize item}{\hbox{\textcolor{blue}{$\blacktriangleright$}}}
+\setbeamertemplate{itemize subitem}{\hbox{\textcolor{orange}{$\blacktriangleright$}}}
+\setbeamertemplate{itemize subsubitem}{\hbox{\textcolor{cyan}{$\blacktriangleright$}}}
+\setbeamerfont{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\normalsize}
+
+
+% href
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,
+	urlcolor=cyan,
+	pdfnewwindow=true}
+
+% その他
+\usepackage{fancybox}
+\usepackage{here}
+
+
+\newenvironment{mybox}{%
+	\begin{tcolorbox}[%
+			enhanced,
+			fonttitle=\bfseries,
+			colframe=gray,
+			colback=gray!25!,
+			colbacktitle=gray!80,
+			attach boxed title to top left={yshift=-2mm, xshift=2mm},
+			]
+		}{%
+	\end{tcolorbox}
+}
+
+\newcommand{\mytitle}[1]{%
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[
+				font=\sffamily,
+				scale=1.1,
+				transform shape]
+			\node[
+				rectangle,
+				text width=180,
+				text height=50,
+				fill=blue!20,
+				draw=black,
+				outer sep=1mm
+			] at (0, 0) {};
+			\node at (0, 0) {\textbf{#1}};
+		\end{tikzpicture}
+	\end{figure}
+}
+
+
+\newcommand{\figa}{%
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[
+				font=\sffamily,
+				scale=1.05,
+				transform shape]
+			\node[
+				rectangle,
+				text width=190,
+				text height=20,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (s) at (3, 5) {};
+			\node[
+				rectangle,
+				text width=180,
+				text height=10,
+				draw=gray!80,
+				fill=gray!80,
+				outer sep=1mm
+			] (sa) at (2.5, 6.5) {};
+			\node[
+				rectangle,
+				text width=270,
+				text height=20,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (t) at (22, 0.6) {};
+			\node[
+				rectangle,
+				text width=180,
+				text height=10,
+				draw=gray!80,
+				fill=gray!80,
+				outer sep=1mm
+			] (ta) at (19.5, -0.9) {};
+			\node[
+				rectangle,
+				text width=270,
+				text height=20,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (r) at (22, 5) {};
+			\node[
+				rectangle,
+				text width=90,
+				text height=10,
+				draw=gray!80,
+				fill=gray!80,
+				outer sep=1mm
+			] (ra) at (18.0, 6.5) {};
+			%\node[
+			%	rectangle,
+			%	text width=140,
+			%	text height=55,
+			%	rounded corners,
+			%	draw=blue,
+			%	fill=blue!20,
+			%	outer sep=1mm
+			%] (m) at (9, 0.8) {};
+			\node (i) at (2.5, 6.5) {\footnotesize \color{white!20} \textbf{モデルの入力}};
+			\node (k) at (18.0, 6.5) {\footnotesize \color{white!20} \textbf{参照文}};
+			\node (j) at (19.5, -0.9) {\footnotesize \color{white!20} \textbf{モデルの出力}};
+			\node (x) at (3, 5) {\small きれくない};
+			\node (z) at (22, 5) {\small \textcolor{gray}{\textbf{きれい}}\textcolor{violet}{\textbf{じゃ}}ない};
+			\node (y) at (22, 0.6) {\small \textcolor{gray}{\textbf{きれい}}\textcolor{violet}{\textbf{では}}ない};
+			%\node at (9, 1.6) {\small 誤り訂正};
+			%\node at (9, 0) {\small モデル};
+			\node at (27, 2.8) {\small \color{cyan} 比較・評価};
+			\node at (8, 1.0) {\small \color{cyan} 区間の推定};
+			%\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (x.south) -- (3, 0.8) -- (m.west);
+			%\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (12, 0.6) -- (t.west);
+			\node at (18.0, 2.8) {\small \color{green} o};
+			\node at (21.5, 2.8) {\small \color{red} x};
+			\draw[{Triangle[width=30pt,length=16pt]}-{Triangle[width=30pt,length=16pt]}, line width=2pt] (19.0, 1.6) -- (19.0, 4.0);
+			\draw[{Triangle[width=30pt,length=16pt]}-{Triangle[width=30pt,length=16pt]}, line width=2pt] (22.5, 1.6) -- (22.5, 4.0);
+			\draw[{Triangle[width=30pt,length=16pt]}-{Triangle[width=30pt,length=16pt]}, line width=2pt] (7, 5) -- (16.5, 5);
+			\draw[{Triangle[width=30pt,length=16pt]}-{Triangle[width=30pt,length=16pt]}, line width=2pt] (7, 4.5) -- (16.5, 1.1);
+		\end{tikzpicture}
+	\end{figure}
+}
+
+
+\newcommand{\figb}{%
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[
+				font=\sffamily,
+				scale=1.05,
+				transform shape]
+			\node[
+				rectangle,
+				text width=190,
+				text height=20,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (s) at (3, 0) {};
+			\node[
+				rectangle,
+				text width=150,
+				text height=10,
+				draw=gray!80,
+				fill=gray!80,
+				outer sep=1mm
+			] (sa) at (1, 1.5) {};
+			\node[
+				rectangle,
+				text width=270,
+				text height=20,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (t) at (20, 0) {};
+			\node[
+				rectangle,
+				text width=190,
+				text height=10,
+				draw=gray!80,
+				fill=gray!80,
+				outer sep=1mm
+			] (ta) at (17, 1.5) {};
+			\node (i) at (1, 1.5) {\footnotesize \color{white!20} \textbf{学習者の文}};
+			\node (j) at (17, 1.5) {\footnotesize \color{white!20} \textbf{教師の訂正文}};
+			\node (x) at (3, 0) {\small \textcolor{gray}{\textbf{きれく}}ない};
+			\node (y) at (20, 0) {\small \textcolor{gray}{\textbf{きれい}}\textcolor{violet}{\textbf{じゃ}}ない};
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (1.5, -1) -- (1.5, -2.5) -- (17, -2.5) -- (17, -1);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (21, -2.8) -- (21, -1);
+			\node (p) at (9.25, -3.5) {\footnotesize \color{blue} イ形容詞・ナ形容詞の混同};
+			\node (q) at (21, -3.5) {\footnotesize \color{blue} 脱落};
+		\end{tikzpicture}
+	\end{figure}
+}
+
+
+\newcommand{\figc}{%
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[
+				font=\sffamily,
+				scale=1.0,
+				transform shape]
+			\node[
+				rectangle,
+				text width=250,
+				text height=15,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (a) at (0, 0) {};
+			\node[
+				rectangle,
+				text width=130,
+				text height=15,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (b) at (11, 0) {};
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (-7, 0) -- (a.west);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (a) -- node [auto] {\hspace*{-0.5em}\color{blue}Yes} (b);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (b.east) -- node [auto] {\hspace*{-0.5em}\color{blue}Yes} (17, 0);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (a.south) -- (0, -2) -- (3, -2);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (b.south) -- (11, -2) -- (14, -2);
+			\node at (-1.5, -1.7) {\color{red}No};
+			\node at (9.5, -1.7)  {\color{red}No};
+			\node at (-9, 0) {\small マージ};
+			\node at (0, 0) {\small 隣接する編集か};
+			\node at (11,0) {\small MWEか};
+			\node at (19,0) {\small する};
+			\node at (5,-2) {\small しない};
+			\node at (16,-2) {\small しない};
+		\end{tikzpicture}
+	\end{figure}
+}
+
+
+\newcommand{\figd}{%
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[
+				font=\sffamily,
+				scale=1.0,
+				transform shape]
+
+			\node[
+				rectangle,
+				text width=100,
+				text height=15,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (a) at (0, 0) {};
+
+			\node[
+				rectangle,
+				text width=190,
+				text height=50,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (b) at (9, 0) {};
+
+			\node[
+				rectangle,
+				text width=170,
+				text height=50,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (c) at (19, 0) {};
+
+			\node[
+				rectangle,
+				text width=170,
+				text height=50,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (d) at (19, -7) {};
+
+			\node[
+				rectangle,
+				text width=100,
+				text height=15,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (e) at (9, -7) {};
+
+			\node[
+				rectangle,
+				text width=150,
+				text height=15,
+				draw=green!20,
+				fill=green!20,
+				outer sep=1mm
+			] (f) at (0, -7) {};
+
+			\node at (-7, 0) {\small 区間};
+			\node at (0, 0) {\small 記号};
+			\node at (9, 0.7) {\footnotesize 見出しが同じ};
+			\node at (9, -0.7) {\scriptsize 動/形容/助動詞};
+			\node at (19, 0.7) {\footnotesize 読みの編集};
+			\node at (19, -0.7) {\footnotesize 率が < 50\%};
+
+			\node at (19, -6.3) {\footnotesize 内容語で};
+			\node at (19, -7.7) {\footnotesize 品詞が同じ};
+			\node at (9, -7) {\small MWE};
+			\node at (0, -7) {\small ２語以上};
+
+			\node (p) at (0, -4) {\small 表記};
+			\node (q) at (9, -4) {\small 文法};
+			\node (r) at (19, -4) {\small 表記};
+			\node (s) at (19, -11) {\small 語彙};
+			\node (t) at (9, -11) {\small 文法};
+			\node (u) at (0, -11) {\small 表現};
+			\node (v) at (-8, -7) {\small 文法};
+
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (-5, 0) -- (a.west);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (a.east) -- node [above] {\color{red}No} (b.west);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (b.east) -- node [above] {\color{red}No} (c.west);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (c.east) -- node [above] {\color{red}No} (25, 0) -- (25, -7) -- (d.east);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (d.west) -- node [above] {\color{red}No} (e.east);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (e.west) -- node [above] {\color{red}No} (f.east);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (f.west) -- node [above] {\color{red}No} (v.east);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (a.south) -- node [left] {\color{blue}Yes} (p.north);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (b.south) -- node [left] {\color{blue}Yes} (q.north);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (c.south) -- node [left] {\color{blue}Yes} (r.north);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (d.south) -- node [left] {\color{blue}Yes} (s.north);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (e.south) -- node [left] {\color{blue}Yes} (t.north);
+			\draw[-{Triangle[width=30pt,length=16pt]}, line width=2pt] (f.south) -- node [left] {\color{blue}Yes} (u.north);
+
+
+		\end{tikzpicture}
+	\end{figure}
+}
+
+\newcommand{\mynum}[2]{%
+	{\color{#1}\fontsize{50pt}{0pt}\selectfont\dejavu{\char"#2}\hspace*{-0.35em}}
+}
+
+
+\begin{document}
+\begin{frame}[t]
+	\begin{columns}[t]
+		\begin{column}{.33\linewidth}
+
+			\vspace*{0.5em}
+
+			\begin{mybox}
+				\fontsize{50pt}{50pt}\selectfont
+				日本語誤り訂正の\kern.0em\textbf{(評価の)}\kern.0emための\textcolor{red}{誤り区間}と\\\textcolor{blue}{誤り種類}の自動アノテーションに向けて
+
+				\begin{flushright}
+					\small
+					\underline{\textbf{古山翔太}}\kern.0em${}^{1,2}$,
+					永田亮\kern.0em${}^{3}$,
+					高村大也\kern.0em${}^{2}$,
+					岡崎直観\kern.0em${}^{1,2}$
+					\\
+					(${}^{1}$東工大, ${}^{2}$産総研, ${}^{3}$甲南大)
+				\end{flushright}
+
+			\raisebox{60pt}[0pt][0pt]{
+				\hspace*{-0.75em}
+					\begin{tikzpicture}
+						\node[
+							rectangle,
+							text width = 100,
+							text height = 40,
+							rounded corners,
+							draw=gray!80,
+							fill=gray!80,
+							outer sep=1mm] at (0, 0) {};
+						\node at (0, 0) {\large \textcolor{white!20}{\textbf{P4-9}}};
+						\node[overlay] at (6.3, -0.7) {\footnotesize \text{東工大 D1}};
+					\end{tikzpicture}
+				}
+			\vspace*{-1em}
+
+			\end{mybox}
+
+			\begin{block}{\mynum{white}{2776}モデル化：誤り訂正の評価}
+				\begin{itemize}
+					\item 入力
+						\begin{itemize}
+							\item モデルの入力・モデルの出力・参照文
+						\end{itemize}
+					\item 計算するもの
+						\begin{itemize}
+							\item \textbf{誤り区間の対応関係}　←\textcolor{red}{これをやる}
+						\end{itemize}
+					\item 出力
+						\begin{itemize}
+							\item モデルの出力と参照文での一致スコア
+						\end{itemize}
+				\end{itemize}
+				\figa
+			\end{block}
+
+			\begin{block}{\mynum{white}{2777}誤り種類はなぜ必要？}
+				\begin{itemize}
+					\item[\mynum{blue}{2776}] 誤り訂正モデルの評価 （NLP分野）
+						\begin{itemize}
+							\item 誤り種類別の詳細な評価が可能
+						\end{itemize}
+					\item[\mynum{blue}{2777}] 誤用分析 （言語教育分野）
+						\begin{itemize}
+							\item 大規模学習者コーパス分析の自動化
+						\end{itemize}
+				\end{itemize}
+				\figb
+			\end{block}
+
+			\begin{block}{\mynum{white}{2778}アノテーション基準：誤り区間}
+				\begin{itemize}
+					\item 一貫性のある基準として，以下に限定
+						\begin{itemize}
+							\item 単語・複合語・記号
+							\item 助詞・助動詞の連接
+							\item multi-word expression (MWE)
+							\item 文節
+						\end{itemize}
+				\end{itemize}
+			\end{block}
+
+			\begin{block}{\mynum{white}{2779}アノテーション基準：誤り種類}
+				\begin{itemize}
+					\item 言語学的分類（４種類）
+						\begin{itemize}
+							\item 表記・語彙・文法・表現・その他
+						\end{itemize}
+				\end{itemize}
+			\end{block}
+
+		\end{column}
+
+		\begin{column}{.33\linewidth}
+
+			\vspace*{-0.5em}
+
+			\begin{block}{\mynum{white}{277A}誤り区間の推定}
+				\begin{itemize}
+					\item ERRANT\kern.0emの方法をもとに手法
+						\begin{itemize}
+							\item 品詞等を考慮した編集距離と動的計画法で単語間の編集を得て，編集をマージして誤り区間を得る
+						\end{itemize}
+					\item 編集距離の設計\hspace{1em}{\footnotesize（単語分割はspaCy/GiNZA）}\\
+						\hspace*{-1em}
+						$
+						{\text{距離}=\left\{
+						\begin{array}{ll}
+							0 & \text{　　（同じトークン）} \\
+							0.5 & \text{　　（削除 or 挿入）} \\
+							\multicolumn{2}{l}{
+									\begin{tabular}{l}
+									$0.333 \times (\text{読みの編集率}$ \\
+									$　　　　　　　　　　　　　　　　　　　　　+ \text{見出し} + \text{品詞} )$
+									\end{tabular}
+								}
+						\end{array}
+						\right.
+						}
+						$
+						\begin{itemize}
+							\item 「読み」が英語との差分
+						\end{itemize}
+					\item マージ規則
+				\end{itemize}
+				\vspace*{-0.75em}
+				\figc
+			\end{block}
+
+			\begin{block}{\mynum{white}{277B}誤り種類の推定}
+				\begin{itemize}
+					\item 誤り種類の推定
+				\end{itemize}
+				\vspace*{-1.5em}
+				\figd
+			\end{block}
+
+			\begin{block}{\mynum{white}{277C}データ作成・評価}
+				\begin{itemize}
+					\item TEC-JLコーパス中の 100文に対して，アノテーションし，評価
+						\begin{itemize}
+							\item 改善の余地が大きく，課題が残る
+						\end{itemize}
+				\end{itemize}
+
+
+				\begin{table}[H]
+				\scalebox{0.95}{
+					\phantom{\small 区間＋}
+					\begin{tabular}{crrrrrr}
+						\hline &
+						\multicolumn{1}{c}{TP} &
+						\multicolumn{1}{c}{FP} &
+						\multicolumn{1}{c}{FN} &
+						\multicolumn{1}{c}{Prec} &
+						\multicolumn{1}{c}{Rec} &
+						\multicolumn{1}{c}{F${}_1$} \\
+						\hline
+						{\small 区間} &
+						174 & 108 & 71 &
+						61.70 & 71.02 & 66.03 \\
+						\hline
+					\end{tabular}
+					}
+				\end{table}
+
+				\begin{table}[H]
+				\scalebox{0.95}{
+					\begin{tabular}{crrrrrr}
+						\hline
+						{\small 区間＋種類} &
+						\multicolumn{1}{c}{TP} &
+						\multicolumn{1}{c}{FP} &
+						\multicolumn{1}{c}{FN} &
+						\multicolumn{1}{c}{Prec} &
+						\multicolumn{1}{c}{Rec} &
+						\multicolumn{1}{c}{F${}_1$} \\
+						\hline {\small  表記 } &  21 &   9 &  27 &  70.00 &  43.75 &  53.85 \\
+						\hline {\small  語彙 } &   6 &   5 &   8 &  54.55 &  42.86 &  48.00 \\
+						\hline {\small  文法 } & 125 & 116 &  35 &  51.87 &  78.12 &  62.34 \\
+						\hline {\small  表現 } &   0 &   0 &  16 &      - &      0 &      0 \\
+						\hline {\small その他} &   0 &   0 &   7 &      - &      0 &      0 \\
+						\hline {\small   計  } & 152 & 130 &  93 &  53.90 &  62.04 &  57.69 \\
+						\hline
+					\end{tabular}
+				}
+				\end{table}
+
+
+			\end{block}
+
+		\end{column}
+
+		\begin{column}{.33\linewidth}
+
+			\begin{block}{\mynum{white}{277D}課題：誤り区間推定の今後}
+				\begin{itemize}
+					\item[\mynum{blue}{2776}] 誤り文の単語分割
+						\begin{itemize}
+							\item 「きれく」は辞書にない
+							\item 修正文に依存することがある
+								\begin{itemize}
+									\item 「かわい\kern.0em|\kern.0emそ\kern.0em|\kern.0emだ」「かわいい\kern.0em|\kern.0emそう\kern.0em|\kern.0emだ」
+									\item 「かわいそ\kern.0em|\kern.0emだ」「かわいそう\kern.0em|\kern.0emだ」
+								\end{itemize}
+						\end{itemize}
+					\item[\mynum{blue}{2777}] トップダウンの区間推定へ
+						\begin{itemize}
+							\item ボトムアップ型 (ERRANT)
+								\begin{itemize}
+									\item 単語単位の編集をマージ
+									\item 誤り区間の一貫性を保ちにくい
+								\end{itemize}
+							\item トップダウン型
+								\begin{itemize}
+									\item 区間の候補を先に得て，選択
+								\end{itemize}
+						\end{itemize}
+				\end{itemize}
+			\end{block}
+
+			\begin{block}{\mynum{white}{277E}課題：誤り種類推定の今後}
+				\begin{itemize}
+					\item[\mynum{blue}{2776}] タグの設計
+						\begin{itemize}
+							\item 下位の分類
+							\item 文法誤り
+								\begin{itemize}
+									\item 品詞 （ERRANT同様）
+								\end{itemize}
+							\item 表現誤り
+								\begin{itemize}
+									\item 言い換え
+									\item モダリティ（話者の気持ち）の選択
+									\item 語用論的な誤り
+									\item 論理的な誤り
+								\end{itemize}
+						\end{itemize}
+					\item[\mynum{blue}{2777}] 格関係とモダリティ
+						\begin{itemize}
+							\item 命題とモダリティの対比に着目{\footnotesize(寺村82)}\hspace*{-2em}
+								\begin{itemize}
+									\item 「本を読む可能性がある」
+									\item 「本を読むかもしれない」
+									\item 「本を読」までが「命題」で「格関係」
+									\item 後ろが「モダリティ」
+								\end{itemize}
+							\item 格関係
+								\begin{itemize}
+									\item 語彙誤り・文法誤り
+								\end{itemize}
+							\item モダリティ
+								\begin{itemize}
+									\item 文法誤り・表現誤り
+								\end{itemize}
+							\item 英語にはない発想が必要
+						\end{itemize}
+				\end{itemize}
+			\end{block}
+
+
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\begin{columns}
+		\begin{column}{.49\linewidth}
+
+			\begin{mybox}
+				\large 補足ポスター
+			\end{mybox}
+
+			\begin{block}{誤り種類の仕様はどう決めるか？}
+				\begin{itemize}
+					\item James 98 の誤り分類法
+						\begin{itemize}
+							\item[\mynum{orange}{2776}] 逸脱様態に基づく分類 (modification)
+								\begin{itemize}
+									\item 脱落，付加，誤形成，語順
+								\end{itemize}
+							\item[\mynum{orange}{2777}] 言語学的分類 (linguistic)
+								\begin{itemize}
+									\item 表記，文法，語彙，文章，談話
+									\item 品詞・文法カテゴリ・同義語対義語・コロケーション等は，その下位分類になる
+								\end{itemize}
+						\end{itemize}
+					\item Granger 03 の誤り種類の設計方針
+						\begin{itemize}
+							\item[\mynum{orange}{2776}] 有益性・情報提供性 (informativity)
+								\begin{itemize}
+									\item 学習者のために詳細に情報を提供できる
+								\end{itemize}
+							\item[\mynum{orange}{2777}] 運用性・管理容易性 (manageablility)
+								\begin{itemize}
+									\item アノテーターが運用できるよう詳細すぎない
+								\end{itemize}
+							\item[\mynum{orange}{2778}] 再利性・再利用可能性 (reusablility)
+								\begin{itemize}
+									\item 異なるドメインでも一般的に利用できる
+								\end{itemize}
+							\item[\mynum{orange}{2779}] 柔軟性 (flexibility)
+								\begin{itemize}
+									\item 誤り種類の変更（追加・削除）が容易
+								\end{itemize}
+							\item[\mynum{orange}{277A}] 一貫性 (consistency)
+								\begin{itemize}
+									\item アノテーター間での差異がなるべく小さい
+								\end{itemize}
+						\end{itemize}
+				\end{itemize}
+			\end{block}
+
+			\begin{block}{参考文献}
+				\small
+				C. Bryant, M. Felice, T. Briscoe (2017).
+				``Automatic Annotation and Evaluation of Error Types for Grammatical Error Correction.''
+				% ACL 2017.%, 793-805.
+				\\
+				C. James (1998).
+ 				``Errors in Language Learning and Use: Exploring Error Analysis.''
+				London and New York: Longman.
+				\\
+				S. Granger (2003).
+				``Error-tagged Learner Corpora and CALL:A Promising Synergy.''
+				CALICO Journal 20/3, 465–480.
+				\\
+				吉川武時 (1997). 
+				外国人の日本語誤用分析　誤用分析I.
+				明治書院企画編集部\ 編『日本語誤用分析』明治書院.
+				\\
+				A. Koyama, T. Kiyuna, K. Kobayashi, M. Arai, M. Komachi (2020).
+				``Construction of an Evaluation Corpus for Grammatical Error Correction for Learners of Japanese as a Second Language.''
+				LREC 2020.
+				\\
+				宮田学\ 編 (2002).
+				ここまで通じる日本人英語　新しいライティングのすすめ.
+				大修館書店.
+				\\
+				A. Lüdeling, M. Walter, E. Kroymann, P. Adolphs  (2005).
+				``Multi-level error annotation in learner corpora.''
+			\end{block}
+		\end{column}
+
+		\begin{column}{.49\linewidth}
+
+			\begin{block}{誤り種類はどう決めたか？}
+				\begin{itemize}
+					\item 吉川 97 の４分類（言語学的分類）＋その他
+						\begin{itemize}
+							\item 表記・語彙・文法・表現・その他
+						\end{itemize}
+					\item 運用性・再利性・柔軟性・一貫性を満たす
+				\end{itemize}
+			\end{block}
+
+			\begin{block}{今後の課題として考えていること}
+				\begin{itemize}
+					\item[\mynum{blue}{2776}]
+						誤り文の単語分割の改善
+						\begin{itemize}
+							\item 誤り文の単語分割が失敗すると，誤り区間・誤り種類の推定も失敗する
+								\begin{itemize}
+									\item 「きれく」は辞書にない
+								\end{itemize}
+							\item 修正文の分割を参照する誤り文の分割は？
+								\begin{itemize}
+									\item 誤り文の分割は，訂正文の影響を受ける
+									\item 「かわい|そ|だ」 $\to$ 「かわいい|そう|だ」
+									\item 「かわいそ|だ」 $\to$ 「かわいそう|だ」
+								\end{itemize}
+						\end{itemize}
+					\item[\mynum{blue}{2777}]
+						ERRANT\kern.0emの枠組みでの誤り区間の推定の限界は？\hspace*{-1em}
+						\begin{itemize}
+							\item 単語単位の編集をマージするボトムアップの枠組みは，誤り区間に一貫性を持たせにくい
+							\item 基準に適した誤り区間の候補を先に得て，選択するトップダウンの枠組みに可能性？
+						\end{itemize}
+					\item[\mynum{blue}{2778}]
+						評価手法の評価
+						\begin{itemize}
+							\item より一貫性のあるアノテーション基準の作成
+						\end{itemize}
+					\item[\mynum{blue}{2779}]
+						有益性の高い誤り種類の設計
+						\begin{itemize}
+							\item 品詞・文法カテゴリ等$\to$誤用分析研究を参考
+						\end{itemize}
+					\item[\mynum{blue}{277A}]
+						「表現の誤り」や「流暢性」などの都合の良い概念に依存していないか？
+						\begin{itemize}
+							\item 実質的に「その他」と差がなく，有益性が低い
+							\item 「論理的誤り」「語用論的誤り」（宮田+ 02）
+							\item アノテーションスキームの見直し
+								\begin{itemize}
+									\item Multi-layer standoff annotation (Lüdeling+ 05)
+									\item 日本語に対して，高い表現力のアノテーションに利点があるか？\ （語順・談話などは？）
+								\end{itemize}
+						\end{itemize}
+					\item[\mynum{blue}{277B}]
+						係り受け構造の利用
+						\begin{itemize}
+							\item 構造の違いは，表現の違い
+							\item 表現の誤りは，構造が手がかりになる
+						\end{itemize}
+				\end{itemize}
+
+			\end{block}
+
+		\end{column}
+
+	\end{columns}
+\end{frame}
+
+\end{document}
+
